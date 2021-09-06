@@ -1,0 +1,2 @@
+place,country,magnitude,rupture_time,felt,cdi,mmi,alert,longitude,latitude,depth,url,collect_data
+"12 km NNE of Chardonnière, Haiti",Haiti,5.8,2021-08-14 20:20:45,11,6.4,6.773,yellow,-74.0992,18.3711,12.04,https://earthquake.usgs.gov/earthquakes/eventpage/us6000f6ez,True
