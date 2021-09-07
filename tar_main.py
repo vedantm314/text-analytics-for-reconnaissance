@@ -41,7 +41,7 @@ def get_sentences_from_news(workingPath, newsArticles):
 
     urlLinks = (newsArticles["url"]).to_numpy()
 
-    for j in range(0, len(urlLinks)):
+    for j in range(0, 1):
         get_content(sentencesList, urlLinks[j], workingPath + "/overviewData/article.txt")
 
     return sentencesList
