@@ -2,6 +2,7 @@ import textract
 
 from nltk import sent_tokenize
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import requests
 from webdriver_manager.chrome import ChromeDriverManager
@@ -23,35 +24,38 @@ def get_content(sentencesList, website, dest_file=""):
     In order to split the sentences, package nltk is used herein.
         nltk needs to be downloaded first by using "nltk.download()".
     """
+    
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    driver = webdriver.Chrome(ChromeDriverManager(version="93.0.4577.15").install(), chrome_options=chrome_options)
 
-    driver = webdriver.Chrome(ChromeDriverManager(version="93.0.4577.15").install())
-    try:
-        driver.get(website)
-        content_element = driver.find_element_by_tag_name("div")
-        content_html = content_element.get_attribute("innerHTML")
-        soup = BeautifulSoup(content_html, "html.parser")
-        p_tags = soup.find_all("p")
+    driver.get(website)
+    content_element = driver.find_element_by_tag_name("div")
+    content_html = content_element.get_attribute("innerHTML")
+    soup = BeautifulSoup(content_html, "html.parser")
+    p_tags = soup.find_all("p")
 
-        if (dest_file != ""):
-            text = open(dest_file, "w")
-            for p in p_tags:
-                sentences = sent_tokenize(p.getText())
+    if (dest_file != ""):
+        text = open(dest_file, "w")
+        for p in p_tags:
+            sentences = sent_tokenize(p.getText())
 
-                for i in range(len(sentences)):
-                    if(len(sentences[i].split(" ")) > 1): 
-                        sentencesList.append(sentences[i]) 
+            for i in range(len(sentences)):
+                if(len(sentences[i].split(" ")) > 1): 
+                    sentencesList.append(sentences[i]) 
 
-                    text.write(sentences[i]) 
-                    text.write("\n")
-            text.close()
-        else:
-            for p in p_tags:
-                sentences = sent_tokenize(p.getText())
-                for i in range(len(sentences)):
-                    print(sentences[i])
-        driver.close()
-    except:
-        driver.close()
+                text.write(sentences[i]) 
+                text.write("\n")
+        text.close()
+    else:
+        for p in p_tags:
+            sentences = sent_tokenize(p.getText())
+            for i in range(len(sentences)):
+                print(sentences[i])
+
+    driver.close()
         
 def read_pdf(filename):
     """
