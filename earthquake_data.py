@@ -11,7 +11,7 @@ from newsapi import NewsApiClient
 
 class EarthquakeDataCollector:
     config = configparser.ConfigParser()
-    config.read("config.ini")
+    config.read("config/config.ini")
 
     VERBOSE = config.getboolean("default", "verbose")
     DATA_DIR = config["default"]["data_dir"]
@@ -93,7 +93,7 @@ class EarthquakeDataCollector:
 
     def runDailyUpdate(self):
         keys_parser = configparser.ConfigParser()
-        keys_parser.read('keys.ini')
+        keys_parser.read('config/keys.ini')
         twitter_keys = [keys_parser['tweepyapi_key']['consumer_key'],
                         keys_parser['tweepyapi_key']['consumer_secret'],
                         keys_parser['tweepyapi_key']['access_token'],
@@ -106,10 +106,10 @@ class EarthquakeDataCollector:
         print("Today is: ", today)
 
         # Yesterday date
-        yesterday = today - timedelta(days=1)
+        yesterday = today - timedelta(days=67)
         print("Query date: ", yesterday)
 
-        log_file = self.runDailyUSGSQuery(today)
+        log_file = self.runDailyUSGSQuery(yesterday)
 
         self.runTweetAndNewsCollection(log_file, yesterday, twitter_keys, news_key)
 
@@ -203,7 +203,7 @@ class EarthquakeDataCollector:
 
         response = requests.get(URL)
         earthquakes = response.json()['features']
-
+        print("eathquake " + str(len(earthquakes)))
         if self.VERBOSE: print("{0} {1} earthquake today.".format(len(earthquakes), alert))
 
         return earthquakes

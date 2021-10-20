@@ -18,8 +18,11 @@ class FineTunedBertModule:
         preds = []
 
         for x in range(0, len(sentences)): 
+
             tokenized_sentence = self.tokenize_sentence(sentences[x])
+
             logits = self.model(**tokenized_sentence).logits
+
 
             numerical_prediction = np.argmax(logits.detach().numpy(), axis = -1)
 

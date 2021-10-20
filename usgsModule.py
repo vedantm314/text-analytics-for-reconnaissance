@@ -1,12 +1,148 @@
+# -*- coding: utf-8 -*-
+import os
+import re
+import csv
+import pandas
+import calendar
+import pytz
+import pandas as pd
+import requests
 import numpy as np
-from urllib.request import urlopen
-from selenium import webdriver
-from bs4 import BeautifulSoup
-from webdriver_manager.chrome import ChromeDriverManager
-from PIL import Image
 import cv2
 import pytesseract 
 import time
+
+from bs4 import BeautifulSoup
+from datetime import datetime
+from dateutil import tz
+from tzwhere import tzwhere
+from urllib.request import urlopen
+from selenium import webdriver
+from PIL import Image
+from webdriver_manager.chrome import ChromeDriverManager
+
+
+def generateSummary(source_data, dest_file, index):
+    """
+    README: This function is used to process the earthquake basic information from csv file 
+        into sentences, and save to a file. The csv file is the standardized file downloaded from the USGS website.
+    
+    source_data: csv data file (and directory).
+    dest_file: output file name (and directory). *.txt recommended.
+    index: the index of event to be processed in the csv file (starting at 0).
+    """
+
+    df = pd.read_csv(source_data)  
+
+    utctime = df.iloc[index]['rupture_time']
+    utctime = utctime.replace("/", "-") 
+    longitude = df.iloc[index]['longitude']
+    latitude = df.iloc[index]['latitude']
+
+    # UTC to local time (daylight save is also considered)
+    tzwherev = tzwhere.tzwhere()
+    timezone_str = tzwherev.tzNameAt(latitude, longitude) # Seville coordinates
+    from_zone = tz.gettz('UTC')
+    to_zone = tz.gettz(timezone_str)
+    utc = datetime.strptime(utctime, '%Y-%m-%d %H:%M:%S')
+    utc = utc.replace(tzinfo=from_zone)
+    localtime = utc.astimezone(to_zone)
+
+    result = "On {} {}, {}, at approximately {}:{} local time, ".format(calendar.month_name[localtime.month], localtime.day, localtime.year, localtime.hour, localtime.minute); 
+    result += "a magnitude {} earthquake, with a depth of {} km, ".format(df.iloc[index]['magnitude'], df.iloc[index]['depth']);
+    location = df.iloc[index]['place'];
+    location = re.split('km | | of', location);
+    direction = {"E": "East", "W": "West", "S": "South", "N": "North", "SE": "Southeast", "SW": "Southwest", "NE": "Northeast", "NW": "Northwest", "ESE": "East-Southeast", "WSW": "West-Southwest", "ENE": "East-Northeast", "WNW": "West-Northwest", "SSE": "South-Southeast", "SSW": "South-Southwest", "NNE": "North-Northeast", "NNW": "North-Northwest"}
+    city = "";
+    for i in range(3, len(location)):
+        city += location[i] + " ";
+    city = city[:-1];
+    (location) = list(filter(None, location))
+    print(direction)
+    print(location)
+    result += "struck {} km {} of {}. ".format(location[0], direction[location[1]], city);
+    if (float(latitude) > 0):
+        latitudeNS = "N";
+    else:
+        latitudeNS = "S";
+    if (float(longitude) > 0):
+        longitudeEW = "E";
+    else:
+        longitudeEW = "W";
+    result += "The coordinate of epicenter of the earthquake was {}°{}, {}°{}.".format(abs(float(latitude)), latitudeNS, abs(float(longitude)), longitudeEW);
+    result += "\n";
+    text = open(dest_file, "a");
+    text.write(result);
+    text.close();
+    
+    return result
+
+def getTectonicIntensityInformation(source_data, dest_file_pic, dest_file_text, index):
+    """
+    README: This function is used to obtain the earthquake tectonic and intensity information from USGS website.
+        It reads the website link from the standardized USGS csv data file, 
+        and "inspect" the website to download the relevant information.
+        The intensity map is saved as picture, and the tectonic information is saved as text files.
+    
+    source_data: csv data file (and directory).
+    dest_file_pic: intensity information output file name (and directory). *.jpg recommended.
+    dest_file_text: tectonic information output file name (and directory). *.txt recommended.
+    index: the index of event to be processed in the csv file (starting at 0).
+    
+    In order to inspect pages, we need selenium, which could be downloaded at 
+    https://selenium-python.readthedocs.io/installation.html#downloading-python-bindings-for-selenium
+    We used Chrome version, which could automatically open Chrome
+    After downloading, run it, and fill in below the executable_path, which is
+    /Users/lichenglong/Downloads/chromedriver in my case
+    If the code fails, try one more time.
+    """
+
+    df = pd.read_csv(source_data)
+    url = df.iloc[index]['url']
+    url_intensity = url+"/shakemap/intensity"
+    url_tectonic = url+"/region-info"
+
+    # intensity image
+    url_image = ""
+    print(str(url)) 
+    while (url_image == ""):
+        driver = webdriver.Chrome(ChromeDriverManager(version="93.0.4577.15").install())
+        driver.get(url_intensity)
+        content_element = driver.find_element_by_class_name('ng-star-inserted')
+        content_html = content_element.get_attribute("innerHTML")
+
+        soup = BeautifulSoup(content_html, "html.parser")
+        a_tags = soup.find_all("a", href=True)
+
+
+        for a in a_tags:
+            if (a['href'][-4:] == ".jpg"):
+                url_image = a['href']
+                break
+
+        #driver.close()
+
+    img = Image.open(urlopen(url_image))
+    img.save(dest_file_pic)
+
+    # tectonic information
+    driver.get(url_tectonic)
+    content_element = driver.find_element_by_class_name('ng-star-inserted')
+    content_html = content_element.get_attribute("innerHTML")
+    soup = BeautifulSoup(content_html, "html.parser")
+    p_tags = soup.find_all("p")
+
+    text = open(dest_file_text, "a");
+    retText = "" 
+    
+    for p in p_tags:
+        text.write(p.getText())
+        
+        retText += p.getText() 
+    text.close()
+    
+    return retText 
+    #driver.close()
 
 def get_imagelink(url):
     """

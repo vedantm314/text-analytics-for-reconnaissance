@@ -7,9 +7,9 @@ numpy==1.19.1
 oauthlib==3.1.0
 pandas==1.1.0
 python-docx==0.8.11
-gensim==3.8.1
+gensim==3.8.3
 huggingface-hub==0.0.16
-matplotlib==3.4.3
+matplotlib
 opencv-python==4.5.1.48
 pytesseract==0.3.8
 requests==2.26.0

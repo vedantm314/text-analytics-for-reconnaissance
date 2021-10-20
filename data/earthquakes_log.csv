@@ -1,2 +1,10 @@
 place,country,magnitude,rupture_time,felt,cdi,mmi,alert,longitude,latitude,depth,url,collect_data
 "12 km NNE of Chardonnière, Haiti",Haiti,5.8,2021-08-14 20:20:45,11,6.4,6.773,yellow,-74.0992,18.3711,12.04,https://earthquake.usgs.gov/earthquakes/eventpage/us6000f6ez,True
+"0 km SSE of Palekastro, Greece",Greece,6.4,2021-10-12 02:24:03,196,8.2,8.28,yellow,26.2556,35.1931,10.0,https://earthquake.usgs.gov/earthquakes/eventpage/us6000ftxu,True
+"15 km NNE of Harnai, Pakistan",Pakistan,5.9,2021-10-06 15:01:08,44,8.1,7.112,yellow,68.015,30.2198,9.0,https://earthquake.usgs.gov/earthquakes/eventpage/us6000fsg9,True
+"7 km NNW of Thrapsanón, Greece",Greece,6.0,2021-09-26 23:17:22,133,7.9,7.5139999999999985,yellow,25.2595,35.2523,8.71,https://earthquake.usgs.gov/earthquakes/eventpage/us7000fes8,True
+"38 km SSW of Mount Buller, Australia",Australia,5.9,2021-09-21 16:15:53,5834,5.3,7.244,yellow,146.3466,-37.4863,12.0,https://earthquake.usgs.gov/earthquakes/eventpage/us7000fd9v,True
+"15 km NNE of Chardonnière, Haiti",Haiti,5.8,2021-08-14 20:20:45,11,6.4,7.0420000000000025,yellow,-74.0907,18.3936,7.2,https://earthquake.usgs.gov/earthquakes/eventpage/us6000f6ez,True
+"52 km SE of Neijiang, China",China,5.4,2021-09-15 13:33:32,22,7.3,7.423999999999999,red,105.3748,29.1929,8.78,https://earthquake.usgs.gov/earthquakes/eventpage/us7000fbky,True
+"Acapulco, Mexico",Mexico,7.0,2021-09-07 18:47:47,642,7.6,7.735,red,-99.7429,16.9722,20.0,https://earthquake.usgs.gov/earthquakes/eventpage/us7000f93v,True
+"Nippes, Haiti",Haiti,7.2,2021-08-14 05:29:08,359,9.1,8.677,red,-73.4822,18.4335,10.0,https://earthquake.usgs.gov/earthquakes/eventpage/us6000f65h,True
