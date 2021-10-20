@@ -203,7 +203,7 @@ class EarthquakeDataCollector:
 
         response = requests.get(URL)
         earthquakes = response.json()['features']
-        print("eathquake " + str(len(earthquakes)))
+   
         if self.VERBOSE: print("{0} {1} earthquake today.".format(len(earthquakes), alert))
 
         return earthquakes
